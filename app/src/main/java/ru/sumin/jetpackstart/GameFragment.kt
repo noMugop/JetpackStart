@@ -1,8 +1,6 @@
 package ru.sumin.jetpackstart
 
 import android.content.res.ColorStateList
-import android.graphics.Color
-import android.graphics.ColorFilter
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater

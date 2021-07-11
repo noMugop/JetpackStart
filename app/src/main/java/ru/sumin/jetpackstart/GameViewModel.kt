@@ -27,7 +27,7 @@ class GameViewModel : ViewModel() {
     val percentOfRightAnswers: LiveData<Int>
         get() = _percentOfRightAnswers
 
-    val enoughPercentage = Transformations.map(percentOfRightAnswers) {
+    val enoughPercentage: LiveData<Boolean> = Transformations.map(percentOfRightAnswers) {
         it > gameSettings.minPercentOfRightAnswers
     }
 
