@@ -19,7 +19,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun launchFirstScreen() {
         supportFragmentManager.beginTransaction()
-            .replace(R.id.main_container, GameFragment.newInstance(Level.HARD))
+            .replace(R.id.main_container, GameFragment.newInstance(Level.EASY))
             .commit()
     }
 }

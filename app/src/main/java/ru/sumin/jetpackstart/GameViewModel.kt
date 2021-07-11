@@ -3,6 +3,7 @@ package ru.sumin.jetpackstart
 import android.os.CountDownTimer
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 
 class GameViewModel : ViewModel() {
@@ -22,6 +23,14 @@ class GameViewModel : ViewModel() {
     val gameResult: LiveData<GameResult>
         get() = _gameResult
 
+    private val _percentOfRightAnswers = MutableLiveData<Int>()
+    val percentOfRightAnswers: LiveData<Int>
+        get() = _percentOfRightAnswers
+
+    val enoughPercentage = Transformations.map(percentOfRightAnswers) {
+        it > gameSettings.minPercentOfRightAnswers
+    }
+
     private var timer: CountDownTimer? = null
     private var countOfRightAnswers = 0
     private var countOfWrongAnswers = 0
@@ -37,6 +46,7 @@ class GameViewModel : ViewModel() {
             return
         }
         checkAnswer(answer)
+        getPercentOfRightAnswers()
         generateQuestion()
     }
 
@@ -80,16 +90,23 @@ class GameViewModel : ViewModel() {
     }
 
     private fun getGameResult(): GameResult {
-        val countOfQuestions = countOfRightAnswers + countOfWrongAnswers
-        val percentOfRightAnswers = if (countOfQuestions > 0) {
-            (countOfRightAnswers / countOfQuestions) * 100
-        } else {
-            0
-        }
+        val percentOfRightAnswers = getPercentOfRightAnswers()
         val enoughPercentage = percentOfRightAnswers > gameSettings.minPercentOfRightAnswers
         val enoughRightAnswers = countOfRightAnswers >= gameSettings.minCountOfRightAnswers
         val winner = enoughPercentage && enoughRightAnswers
+        val countOfQuestions = countOfRightAnswers + countOfWrongAnswers
         return GameResult(winner, countOfRightAnswers, countOfQuestions, level)
+    }
+
+    private fun getPercentOfRightAnswers(): Int {
+        val countOfQuestions = countOfRightAnswers + countOfWrongAnswers
+        val percentOfRightAnswers = if (countOfQuestions > 0) {
+            ((countOfRightAnswers / countOfQuestions.toDouble()) * 100).toInt()
+        } else {
+            0
+        }
+        _percentOfRightAnswers.value = percentOfRightAnswers
+        return percentOfRightAnswers
     }
 
     private fun getFormattedLeftTime(millisUntilFinished: Long): String {

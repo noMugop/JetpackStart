@@ -21,12 +21,11 @@ class WelcomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.tvWelcome.text = "Hello!"
     }
 
     companion object {
 
-        fun getInstance(): WelcomeFragment {
+        fun newInstance(): WelcomeFragment {
             return WelcomeFragment()
         }
      }

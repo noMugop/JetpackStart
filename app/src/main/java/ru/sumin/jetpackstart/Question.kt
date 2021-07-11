@@ -15,17 +15,18 @@ data class Question(
 
     companion object {
 
-        private const val MIN_NUMBER = 1
+        private const val MIN_SUM = 2
+        private const val MIN_VISIBLE_NUMBER = 1
         private const val COUNT_OF_ANSWERS = 6
 
         fun generateQuestion(maxValue: Int): Question {
-            val sum = Random.nextInt(MIN_NUMBER, maxValue + 1)
-            val visibleNumber = Random.nextInt(MIN_NUMBER, sum + 1)
+            val sum = Random.nextInt(MIN_SUM, maxValue + 1)
+            val visibleNumber = Random.nextInt(MIN_VISIBLE_NUMBER, sum)
             val options = HashSet<Int>()
             val rightAnswer = sum - visibleNumber
             options.add(rightAnswer)
             while (options.size < COUNT_OF_ANSWERS) {
-                val from = max(0, rightAnswer - COUNT_OF_ANSWERS)
+                val from = max(MIN_VISIBLE_NUMBER, rightAnswer - COUNT_OF_ANSWERS)
                 val to = min(rightAnswer + COUNT_OF_ANSWERS, maxValue)
                 options.add(Random.nextInt(from, to + 1))
             }

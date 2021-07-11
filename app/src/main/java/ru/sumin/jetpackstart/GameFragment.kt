@@ -1,11 +1,15 @@
 package ru.sumin.jetpackstart
 
+import android.content.res.ColorStateList
+import android.graphics.Color
+import android.graphics.ColorFilter
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import ru.sumin.jetpackstart.databinding.FragmentGameBinding
@@ -67,7 +71,21 @@ class GameFragment : Fragment() {
         viewModel.gameResult.observe(viewLifecycleOwner) {
             Log.d("TEST_TEST", it.toString())
         }
-        viewModel.startGame(level)
+        viewModel.percentOfRightAnswers.observe(viewLifecycleOwner) {
+            binding.progressBar.setProgress(it, true)
+        }
+        viewModel.enoughPercentage.observe(viewLifecycleOwner) {
+            val colorResId = if (it) {
+                android.R.color.holo_green_light
+            } else {
+                android.R.color.holo_red_light
+            }
+            val color = ContextCompat.getColor(requireContext(), colorResId)
+            binding.progressBar.progressTintList = ColorStateList.valueOf(color)
+        }
+        if (savedInstanceState == null) {
+            viewModel.startGame(level)
+        }
     }
 
     private fun parseArgs() {
