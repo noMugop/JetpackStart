@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 class GameViewModel : ViewModel() {
 
     private lateinit var gameSettings: GameSettings
+    private lateinit var level: Level
 
     private val _leftFormattedTime = MutableLiveData<String>()
     val leftFormattedTime: LiveData<String>
@@ -40,6 +41,7 @@ class GameViewModel : ViewModel() {
     }
 
     private fun setupGameSettings(level: Level) {
+        this.level = level
         gameSettings = GameSettings.getGameSettingsByLevel(level)
     }
 
@@ -87,7 +89,7 @@ class GameViewModel : ViewModel() {
         val enoughPercentage = percentOfRightAnswers > gameSettings.minPercentOfRightAnswers
         val enoughRightAnswers = countOfRightAnswers >= gameSettings.minCountOfRightAnswers
         val winner = enoughPercentage && enoughRightAnswers
-        return GameResult(winner, countOfRightAnswers, countOfQuestions)
+        return GameResult(winner, countOfRightAnswers, countOfQuestions, level)
     }
 
     private fun getFormattedLeftTime(millisUntilFinished: Long): String {
