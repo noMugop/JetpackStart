@@ -21,6 +21,13 @@ class WelcomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.buttonUnderstand.setOnClickListener {
+            requireActivity().supportFragmentManager
+                .beginTransaction()
+                .replace(R.id.main_container, ChooseLevelFragment.newInstance())
+                .addToBackStack(null)
+                .commit()
+        }
     }
 
     companion object {
@@ -28,5 +35,5 @@ class WelcomeFragment : Fragment() {
         fun newInstance(): WelcomeFragment {
             return WelcomeFragment()
         }
-     }
+    }
 }

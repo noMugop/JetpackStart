@@ -11,6 +11,14 @@ class GameViewModel : ViewModel() {
     private lateinit var gameSettings: GameSettings
     private lateinit var level: Level
 
+    private val _minCountOfRightAnswers = MutableLiveData<Int>()
+    val minCountOfRightAnswers: LiveData<Int>
+        get() = _minCountOfRightAnswers
+
+    private val _minPercentOfRightAnswers = MutableLiveData<Int>()
+    val minPercentOfRightAnswers: LiveData<Int>
+        get() = _minPercentOfRightAnswers
+
     private val _leftFormattedTime = MutableLiveData<String>()
     val leftFormattedTime: LiveData<String>
         get() = _leftFormattedTime
@@ -28,7 +36,7 @@ class GameViewModel : ViewModel() {
         get() = _percentOfRightAnswers
 
     val enoughPercentage: LiveData<Boolean> = Transformations.map(percentOfRightAnswers) {
-        it > gameSettings.minPercentOfRightAnswers
+        it >= gameSettings.minPercentOfRightAnswers
     }
 
     private var timer: CountDownTimer? = null
@@ -53,6 +61,8 @@ class GameViewModel : ViewModel() {
     private fun setupGameSettings(level: Level) {
         this.level = level
         gameSettings = GameSettings.getGameSettingsByLevel(level)
+        _minCountOfRightAnswers.value = gameSettings.minCountOfRightAnswers
+        _minPercentOfRightAnswers.value = gameSettings.minPercentOfRightAnswers
     }
 
     private fun checkAnswer(answer: Int) {

@@ -1,7 +1,7 @@
 package ru.sumin.jetpackstart
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import ru.sumin.jetpackstart.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -19,7 +19,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun launchFirstScreen() {
         supportFragmentManager.beginTransaction()
-            .replace(R.id.main_container, GameFragment.newInstance(Level.EASY))
+            .replace(R.id.main_container, WelcomeFragment.newInstance())
             .commit()
     }
 }

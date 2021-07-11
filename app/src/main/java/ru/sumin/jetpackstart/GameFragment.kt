@@ -36,6 +36,8 @@ class GameFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel = ViewModelProvider(this)[GameViewModel::class.java]
+        val secondaryColor = ContextCompat.getColor(requireContext(), android.R.color.background_dark)
+        binding.progressBar.secondaryProgressTintList = ColorStateList.valueOf(secondaryColor)
         val tvAnswers = mutableListOf<TextView>()
         with(binding) {
             tvAnswers.add(tvOption1)
@@ -67,7 +69,15 @@ class GameFragment : Fragment() {
             binding.tvTimer.text = it
         }
         viewModel.gameResult.observe(viewLifecycleOwner) {
-            Log.d("TEST_TEST", it.toString())
+            val fragment = if (it.winner) {
+                WonFragment.newInstance(it)
+            } else {
+                GameOverFragment.newInstance(it)
+            }
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(R.id.main_container, fragment)
+                .addToBackStack(null)
+                .commit()
         }
         viewModel.percentOfRightAnswers.observe(viewLifecycleOwner) {
             binding.progressBar.setProgress(it, true)
@@ -80,6 +90,9 @@ class GameFragment : Fragment() {
             }
             val color = ContextCompat.getColor(requireContext(), colorResId)
             binding.progressBar.progressTintList = ColorStateList.valueOf(color)
+        }
+        viewModel.minPercentOfRightAnswers.observe(viewLifecycleOwner) {
+            binding.progressBar.secondaryProgress = it
         }
         if (savedInstanceState == null) {
             viewModel.startGame(level)
