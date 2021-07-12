@@ -1,10 +1,11 @@
-package ru.sumin.jetpackstart
+package ru.sumin.jetpackstart.presentation
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import ru.sumin.jetpackstart.R
 import ru.sumin.jetpackstart.databinding.FragmentWelcomeBinding
 
 class WelcomeFragment : Fragment() {

@@ -1,8 +1,7 @@
-package ru.sumin.jetpackstart
+package ru.sumin.jetpackstart.presentation
 
 import android.content.res.ColorStateList
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,7 +9,10 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import ru.sumin.jetpackstart.R
 import ru.sumin.jetpackstart.databinding.FragmentGameBinding
+import ru.sumin.jetpackstart.domain.Level
+import java.util.function.BinaryOperator
 
 class GameFragment : Fragment() {
 
@@ -18,6 +20,7 @@ class GameFragment : Fragment() {
     private lateinit var binding: FragmentGameBinding
 
     private lateinit var level: Level
+    private var tvAnswers = mutableListOf<TextView>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,9 +39,25 @@ class GameFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel = ViewModelProvider(this)[GameViewModel::class.java]
-        val secondaryColor = ContextCompat.getColor(requireContext(), android.R.color.background_dark)
-        binding.progressBar.secondaryProgressTintList = ColorStateList.valueOf(secondaryColor)
-        val tvAnswers = mutableListOf<TextView>()
+        getTextViewsOptions()
+        setupClickListenersToOptions()
+        observeViewModel()
+        if (savedInstanceState == null) {
+            viewModel.startGame(level)
+        }
+    }
+
+    private fun parseArgs() {
+        val args = requireArguments()
+        if (!args.containsKey(ARG_LEVEL)) {
+            throw RuntimeException("Required param level is absent")
+        }
+        args.getParcelable<Level>(ARG_LEVEL)?.let {
+            level = it
+        }
+    }
+
+    private fun getTextViewsOptions() {
         with(binding) {
             tvAnswers.add(tvOption1)
             tvAnswers.add(tvOption2)
@@ -47,22 +66,22 @@ class GameFragment : Fragment() {
             tvAnswers.add(tvOption5)
             tvAnswers.add(tvOption6)
         }
+    }
+
+    private fun setupClickListenersToOptions() {
         for (textView in tvAnswers) {
             textView.setOnClickListener {
                 viewModel.chooseAnswer(textView.text.toString().toInt())
             }
         }
+    }
+
+    private fun observeViewModel() {
         viewModel.question.observe(viewLifecycleOwner) {
             with(binding) {
                 tvSum.text = it.sum.toString()
                 tvLeftNumber.text = it.visibleNumber.toString()
-                val answers = it.answers.toList()
-                tvOption1.text = answers[0].toString()
-                tvOption2.text = answers[1].toString()
-                tvOption3.text = answers[2].toString()
-                tvOption4.text = answers[3].toString()
-                tvOption5.text = answers[4].toString()
-                tvOption6.text = answers[5].toString()
+                setupAnswersToTextViews(it.answers)
             }
         }
         viewModel.leftFormattedTime.observe(viewLifecycleOwner) {
@@ -83,30 +102,27 @@ class GameFragment : Fragment() {
             binding.progressBar.setProgress(it, true)
         }
         viewModel.enoughPercentage.observe(viewLifecycleOwner) {
-            val colorResId = if (it) {
-                android.R.color.holo_green_light
-            } else {
-                android.R.color.holo_red_light
-            }
-            val color = ContextCompat.getColor(requireContext(), colorResId)
-            binding.progressBar.progressTintList = ColorStateList.valueOf(color)
+            setupProgressColorByState(it)
         }
         viewModel.minPercentOfRightAnswers.observe(viewLifecycleOwner) {
             binding.progressBar.secondaryProgress = it
         }
-        if (savedInstanceState == null) {
-            viewModel.startGame(level)
+    }
+
+    private fun setupAnswersToTextViews(answers: List<Int>) {
+        for (i in answers.indices) {
+            tvAnswers[i].text = answers[i].toString()
         }
     }
 
-    private fun parseArgs() {
-        val args = requireArguments()
-        if (!args.containsKey(ARG_LEVEL)) {
-            throw RuntimeException("Required param level is absent")
+    private fun setupProgressColorByState(enoughPercentage: Boolean) {
+        val colorResId = if (enoughPercentage) {
+            android.R.color.holo_green_light
+        } else {
+            android.R.color.holo_red_light
         }
-        args.getParcelable<Level>(ARG_LEVEL)?.let {
-            level = it
-        }
+        val color = ContextCompat.getColor(requireContext(), colorResId)
+        binding.progressBar.progressTintList = ColorStateList.valueOf(color)
     }
 
     companion object {

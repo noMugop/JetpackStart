@@ -1,6 +1,5 @@
-package ru.sumin.jetpackstart
+package ru.sumin.jetpackstart.presentation
 
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,7 +7,9 @@ import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import ru.sumin.jetpackstart.R
 import ru.sumin.jetpackstart.databinding.FragmentGameOverBinding
+import ru.sumin.jetpackstart.domain.GameResult
 
 class GameOverFragment : Fragment() {
 

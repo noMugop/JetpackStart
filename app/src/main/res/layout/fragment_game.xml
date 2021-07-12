@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".GameFragment"
+    tools:context=".presentation.GameFragment"
     >
 
     <TextView
@@ -145,6 +145,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:max="100"
+        android:secondaryProgressTint="@android:color/background_dark"
         app:layout_constraintBottom_toTopOf="@+id/tv_option_2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

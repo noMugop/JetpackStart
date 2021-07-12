@@ -1,7 +1,8 @@
-package ru.sumin.jetpackstart
+package ru.sumin.jetpackstart.presentation
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import ru.sumin.jetpackstart.R
 import ru.sumin.jetpackstart.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {

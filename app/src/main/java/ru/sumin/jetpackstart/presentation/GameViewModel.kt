@@ -1,12 +1,21 @@
-package ru.sumin.jetpackstart
+package ru.sumin.jetpackstart.presentation
 
 import android.os.CountDownTimer
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
+import ru.sumin.jetpackstart.domain.GameResult
+import ru.sumin.jetpackstart.domain.GameSettings
+import ru.sumin.jetpackstart.domain.GenerateQuestionUseCase
+import ru.sumin.jetpackstart.domain.GetGameSettingsUseCase
+import ru.sumin.jetpackstart.domain.Level
+import ru.sumin.jetpackstart.domain.Question
 
 class GameViewModel : ViewModel() {
+
+    private val generateQuestionUseCase = GenerateQuestionUseCase()
+    private val getGameSettingsUseCase = GetGameSettingsUseCase()
 
     private lateinit var gameSettings: GameSettings
     private lateinit var level: Level
@@ -60,7 +69,7 @@ class GameViewModel : ViewModel() {
 
     private fun setupGameSettings(level: Level) {
         this.level = level
-        gameSettings = GameSettings.getGameSettingsByLevel(level)
+        gameSettings = getGameSettingsUseCase(level)
         _minCountOfRightAnswers.value = gameSettings.minCountOfRightAnswers
         _minPercentOfRightAnswers.value = gameSettings.minPercentOfRightAnswers
     }
@@ -91,7 +100,7 @@ class GameViewModel : ViewModel() {
     }
 
     private fun generateQuestion() {
-        _question.value = Question.generateQuestion(gameSettings.maxValue)
+        _question.value = generateQuestionUseCase(gameSettings.maxValue)
     }
 
     private fun finishGame() {

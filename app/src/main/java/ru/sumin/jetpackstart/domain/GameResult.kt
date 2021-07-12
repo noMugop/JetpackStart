@@ -1,4 +1,4 @@
-package ru.sumin.jetpackstart
+package ru.sumin.jetpackstart.domain
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
