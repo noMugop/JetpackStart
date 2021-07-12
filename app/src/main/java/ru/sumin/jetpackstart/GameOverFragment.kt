@@ -15,15 +15,9 @@ class GameOverFragment : Fragment() {
     private lateinit var binding: FragmentGameOverBinding
     private lateinit var gameResult: GameResult
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        val dispatcher = requireActivity().onBackPressedDispatcher
-        dispatcher.addCallback(object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                requireActivity().supportFragmentManager.popBackStack("GameFragment", FragmentManager.POP_BACK_STACK_INCLUSIVE)
-                remove()
-            }
-        })
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        parseArgs()
     }
 
     override fun onCreateView(
@@ -36,15 +30,57 @@ class GameOverFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.tvTest.text = "GameOverFragment: ${gameResult}"
+        val dispatcher = requireActivity().onBackPressedDispatcher
+        dispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                goToStartGame()
+                remove()
+            }
+        })
+        binding.buttonRetry.setOnClickListener {
+            goToStartGame()
+        }
+        with(gameResult) {
+            binding.tvScoreAnswers.text = String.format(
+                getString(R.string.score_answers),
+                countOfRightAnswers,
+                gameSettings.minCountOfRightAnswers
+            )
+            binding.tvScorePercentage.text = String.format(
+                getString(R.string.score_percentage),
+                percentageOfRightAnswers,
+                gameSettings.minPercentOfRightAnswers
+            )
+        }
+    }
+
+    private fun parseArgs() {
+        val args = requireArguments()
+        if (!args.containsKey(ARG_GAME_RESULT)) {
+            throw RuntimeException("$this must contain argument $ARG_GAME_RESULT")
+        }
+        gameResult = args.getParcelable(ARG_GAME_RESULT) ?: throw RuntimeException(
+            "GameResult == null"
+        )
+    }
+
+    private fun goToStartGame() {
+        activity?.supportFragmentManager?.popBackStack(
+            GameFragment.NAME,
+            FragmentManager.POP_BACK_STACK_INCLUSIVE
+        )
     }
 
     companion object {
 
+        private const val ARG_GAME_RESULT = "game_result"
+
         fun newInstance(gameResult: GameResult): GameOverFragment {
-            val fragment = GameOverFragment()
-            fragment.gameResult = gameResult
-            return fragment
+            return GameOverFragment().apply {
+                arguments = Bundle().apply {
+                    putParcelable(ARG_GAME_RESULT, gameResult)
+                }
+            }
         }
     }
 }

@@ -105,7 +105,7 @@ class GameViewModel : ViewModel() {
         val enoughRightAnswers = countOfRightAnswers >= gameSettings.minCountOfRightAnswers
         val winner = enoughPercentage && enoughRightAnswers
         val countOfQuestions = countOfRightAnswers + countOfWrongAnswers
-        return GameResult(winner, countOfRightAnswers, countOfQuestions, level)
+        return GameResult(winner, countOfRightAnswers, countOfQuestions, gameSettings)
     }
 
     private fun getPercentOfRightAnswers(): Int {
