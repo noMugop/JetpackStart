@@ -1,4 +1,4 @@
-package ru.sumin.jetpackstart.domain
+package ru.sumin.jetpackstart.domain.entity
 
 data class Question(
     val sum: Int,

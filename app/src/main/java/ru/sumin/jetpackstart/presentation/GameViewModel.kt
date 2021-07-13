@@ -5,24 +5,23 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
-import ru.sumin.jetpackstart.domain.GameResult
-import ru.sumin.jetpackstart.domain.GameSettings
-import ru.sumin.jetpackstart.domain.GenerateQuestionUseCase
-import ru.sumin.jetpackstart.domain.GetGameSettingsUseCase
-import ru.sumin.jetpackstart.domain.Level
-import ru.sumin.jetpackstart.domain.Question
+import ru.sumin.jetpackstart.data.GameRepositoryImpl
+import ru.sumin.jetpackstart.domain.entity.GameResult
+import ru.sumin.jetpackstart.domain.entity.GameSettings
+import ru.sumin.jetpackstart.domain.entity.Level
+import ru.sumin.jetpackstart.domain.entity.Question
+import ru.sumin.jetpackstart.domain.usecase.GenerateQuestionUseCase
+import ru.sumin.jetpackstart.domain.usecase.GetGameSettingsUseCase
 
 class GameViewModel : ViewModel() {
 
-    private val generateQuestionUseCase = GenerateQuestionUseCase()
-    private val getGameSettingsUseCase = GetGameSettingsUseCase()
+    private val repository = GameRepositoryImpl
+
+    private val generateQuestionUseCase = GenerateQuestionUseCase(repository)
+    private val getGameSettingsUseCase = GetGameSettingsUseCase(repository)
 
     private lateinit var gameSettings: GameSettings
     private lateinit var level: Level
-
-    private val _minCountOfRightAnswers = MutableLiveData<Int>()
-    val minCountOfRightAnswers: LiveData<Int>
-        get() = _minCountOfRightAnswers
 
     private val _minPercentOfRightAnswers = MutableLiveData<Int>()
     val minPercentOfRightAnswers: LiveData<Int>
@@ -70,7 +69,6 @@ class GameViewModel : ViewModel() {
     private fun setupGameSettings(level: Level) {
         this.level = level
         gameSettings = getGameSettingsUseCase(level)
-        _minCountOfRightAnswers.value = gameSettings.minCountOfRightAnswers
         _minPercentOfRightAnswers.value = gameSettings.minPercentOfRightAnswers
     }
 

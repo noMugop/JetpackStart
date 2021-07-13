@@ -11,7 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import ru.sumin.jetpackstart.R
 import ru.sumin.jetpackstart.databinding.FragmentGameBinding
-import ru.sumin.jetpackstart.domain.Level
+import ru.sumin.jetpackstart.domain.entity.Level
 
 class GameFragment : Fragment() {
 
@@ -87,13 +87,8 @@ class GameFragment : Fragment() {
             binding.tvTimer.text = it
         }
         viewModel.gameResult.observe(viewLifecycleOwner) {
-            val fragment = if (it.winner) {
-                WonFragment.newInstance(it)
-            } else {
-                GameOverFragment.newInstance(it)
-            }
             requireActivity().supportFragmentManager.beginTransaction()
-                .replace(R.id.main_container, fragment)
+                .replace(R.id.main_container, GameFinishedFragment.newInstance(it))
                 .addToBackStack(null)
                 .commit()
         }

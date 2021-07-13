@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import ru.sumin.jetpackstart.R
 import ru.sumin.jetpackstart.databinding.FragmentChooseLevelBinding
-import ru.sumin.jetpackstart.domain.Level
+import ru.sumin.jetpackstart.domain.entity.Level
 
 class ChooseLevelFragment : Fragment() {
 

@@ -8,13 +8,19 @@ import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import ru.sumin.jetpackstart.R
-import ru.sumin.jetpackstart.databinding.FragmentGameOverBinding
-import ru.sumin.jetpackstart.domain.GameResult
+import ru.sumin.jetpackstart.databinding.FragmentGameFinishedBinding
+import ru.sumin.jetpackstart.domain.entity.GameResult
 
-class GameOverFragment : Fragment() {
+class GameFinishedFragment : Fragment() {
 
-    private lateinit var binding: FragmentGameOverBinding
+    private lateinit var binding: FragmentGameFinishedBinding
     private lateinit var gameResult: GameResult
+    private val onBackPressedCallback = object : OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() {
+            goToStartGame()
+            remove()
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,32 +31,41 @@ class GameOverFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentGameOverBinding.inflate(inflater, container, false)
+        binding = FragmentGameFinishedBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val dispatcher = requireActivity().onBackPressedDispatcher
-        dispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                goToStartGame()
-                remove()
-            }
-        })
+        activity?.onBackPressedDispatcher?.addCallback(
+            viewLifecycleOwner,
+            onBackPressedCallback
+        )
         binding.buttonRetry.setOnClickListener {
             goToStartGame()
         }
         with(gameResult) {
+            val emojiResId = if (winner) {
+                R.drawable.ic_smile
+            } else {
+                R.drawable.ic_sad
+            }
+            binding.emojiResult.setImageResource(emojiResId)
             binding.tvScoreAnswers.text = String.format(
                 getString(R.string.score_answers),
-                countOfRightAnswers,
+                countOfRightAnswers
+            )
+            binding.tvRequiredAnswers.text = String.format(
+                getString(R.string.required_score),
                 gameSettings.minCountOfRightAnswers
+            )
+            binding.tvRequiredPercentage.text = String.format(
+                getString(R.string.required_percentage),
+                gameSettings.minPercentOfRightAnswers
             )
             binding.tvScorePercentage.text = String.format(
                 getString(R.string.score_percentage),
-                percentageOfRightAnswers,
-                gameSettings.minPercentOfRightAnswers
+                percentageOfRightAnswers
             )
         }
     }
@@ -76,8 +91,8 @@ class GameOverFragment : Fragment() {
 
         private const val ARG_GAME_RESULT = "game_result"
 
-        fun newInstance(gameResult: GameResult): GameOverFragment {
-            return GameOverFragment().apply {
+        fun newInstance(gameResult: GameResult): GameFinishedFragment {
+            return GameFinishedFragment().apply {
                 arguments = Bundle().apply {
                     putParcelable(ARG_GAME_RESULT, gameResult)
                 }
