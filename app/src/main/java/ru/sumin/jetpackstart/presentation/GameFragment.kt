@@ -9,6 +9,8 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import ru.sumin.jetpackstart.R
 import ru.sumin.jetpackstart.databinding.FragmentGameBinding
 import ru.sumin.jetpackstart.domain.entity.Level
@@ -20,6 +22,7 @@ class GameFragment : Fragment() {
 
     private lateinit var level: Level
     private var optionsTextViews = mutableListOf<TextView>()
+    private val args by navArgs<GameFragmentArgs>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,13 +50,7 @@ class GameFragment : Fragment() {
     }
 
     private fun parseArgs() {
-        val args = requireArguments()
-        if (!args.containsKey(ARG_LEVEL)) {
-            throw RuntimeException("Required param level is absent")
-        }
-        args.getParcelable<Level>(ARG_LEVEL)?.let {
-            level = it
-        }
+        level = args.level
     }
 
     private fun getTextViewsOptions() {
@@ -87,10 +84,8 @@ class GameFragment : Fragment() {
             binding.tvTimer.text = it
         }
         viewModel.gameResult.observe(viewLifecycleOwner) {
-            requireActivity().supportFragmentManager.beginTransaction()
-                .replace(R.id.main_container, GameFinishedFragment.newInstance(it))
-                .addToBackStack(null)
-                .commit()
+            val action = GameFragmentDirections.actionGameFragmentToGameFinishedFragment(it)
+            findNavController().navigate(action)
         }
         viewModel.percentOfRightAnswers.observe(viewLifecycleOwner) {
             binding.progressBar.setProgress(it, true)
@@ -117,19 +112,5 @@ class GameFragment : Fragment() {
         }
         val color = ContextCompat.getColor(requireContext(), colorResId)
         binding.progressBar.progressTintList = ColorStateList.valueOf(color)
-    }
-
-    companion object {
-
-        private const val ARG_LEVEL = "level"
-        const val NAME = "GameFragment"
-
-        fun newInstance(level: Level): GameFragment {
-            return GameFragment().apply {
-                arguments = Bundle().apply {
-                    putParcelable(ARG_LEVEL, level)
-                }
-            }
-        }
     }
 }

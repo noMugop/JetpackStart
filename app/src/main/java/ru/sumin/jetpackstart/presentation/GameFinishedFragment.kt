@@ -7,6 +7,8 @@ import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import ru.sumin.jetpackstart.R
 import ru.sumin.jetpackstart.databinding.FragmentGameFinishedBinding
 import ru.sumin.jetpackstart.domain.entity.GameResult
@@ -15,12 +17,8 @@ class GameFinishedFragment : Fragment() {
 
     private lateinit var binding: FragmentGameFinishedBinding
     private lateinit var gameResult: GameResult
-    private val onBackPressedCallback = object : OnBackPressedCallback(true) {
-        override fun handleOnBackPressed() {
-            goToStartGame()
-            remove()
-        }
-    }
+
+    private val args by navArgs<GameFinishedFragmentArgs>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,10 +35,6 @@ class GameFinishedFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        activity?.onBackPressedDispatcher?.addCallback(
-            viewLifecycleOwner,
-            onBackPressedCallback
-        )
         binding.buttonRetry.setOnClickListener {
             goToStartGame()
         }
@@ -71,20 +65,11 @@ class GameFinishedFragment : Fragment() {
     }
 
     private fun parseArgs() {
-        val args = requireArguments()
-        if (!args.containsKey(ARG_GAME_RESULT)) {
-            throw RuntimeException("$this must contain argument $ARG_GAME_RESULT")
-        }
-        args.getParcelable<GameResult>(ARG_GAME_RESULT)?.let {
-            gameResult = it
-        }
+        gameResult = args.gameResult
     }
 
     private fun goToStartGame() {
-        activity?.supportFragmentManager?.popBackStack(
-            GameFragment.NAME,
-            FragmentManager.POP_BACK_STACK_INCLUSIVE
-        )
+        findNavController().navigate(GameFinishedFragmentDirections.actionGameFinishedFragmentToChooseLevelFragment2())
     }
 
     companion object {
