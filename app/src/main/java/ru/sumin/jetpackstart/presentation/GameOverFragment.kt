@@ -60,9 +60,9 @@ class GameOverFragment : Fragment() {
         if (!args.containsKey(ARG_GAME_RESULT)) {
             throw RuntimeException("$this must contain argument $ARG_GAME_RESULT")
         }
-        gameResult = args.getParcelable(ARG_GAME_RESULT) ?: throw RuntimeException(
-            "GameResult == null"
-        )
+        args.getParcelable<GameResult>(ARG_GAME_RESULT)?.let {
+            gameResult = it
+        }
     }
 
     private fun goToStartGame() {

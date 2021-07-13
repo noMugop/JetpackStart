@@ -20,7 +20,7 @@ class GetGameSettingsUseCase {
                 30,
                 30,
                 90,
-                20
+                40
             )
             Level.TEST   -> GameSettings(
                 10,

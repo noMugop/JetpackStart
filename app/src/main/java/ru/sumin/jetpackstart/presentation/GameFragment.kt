@@ -12,7 +12,6 @@ import androidx.lifecycle.ViewModelProvider
 import ru.sumin.jetpackstart.R
 import ru.sumin.jetpackstart.databinding.FragmentGameBinding
 import ru.sumin.jetpackstart.domain.Level
-import java.util.function.BinaryOperator
 
 class GameFragment : Fragment() {
 
@@ -20,7 +19,7 @@ class GameFragment : Fragment() {
     private lateinit var binding: FragmentGameBinding
 
     private lateinit var level: Level
-    private var tvAnswers = mutableListOf<TextView>()
+    private var optionsTextViews = mutableListOf<TextView>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,17 +58,17 @@ class GameFragment : Fragment() {
 
     private fun getTextViewsOptions() {
         with(binding) {
-            tvAnswers.add(tvOption1)
-            tvAnswers.add(tvOption2)
-            tvAnswers.add(tvOption3)
-            tvAnswers.add(tvOption4)
-            tvAnswers.add(tvOption5)
-            tvAnswers.add(tvOption6)
+            optionsTextViews.add(tvOption1)
+            optionsTextViews.add(tvOption2)
+            optionsTextViews.add(tvOption3)
+            optionsTextViews.add(tvOption4)
+            optionsTextViews.add(tvOption5)
+            optionsTextViews.add(tvOption6)
         }
     }
 
     private fun setupClickListenersToOptions() {
-        for (textView in tvAnswers) {
+        for (textView in optionsTextViews) {
             textView.setOnClickListener {
                 viewModel.chooseAnswer(textView.text.toString().toInt())
             }
@@ -81,7 +80,7 @@ class GameFragment : Fragment() {
             with(binding) {
                 tvSum.text = it.sum.toString()
                 tvLeftNumber.text = it.visibleNumber.toString()
-                setupAnswersToTextViews(it.answers)
+                setupTextToOptions(it.answers)
             }
         }
         viewModel.leftFormattedTime.observe(viewLifecycleOwner) {
@@ -109,9 +108,9 @@ class GameFragment : Fragment() {
         }
     }
 
-    private fun setupAnswersToTextViews(answers: List<Int>) {
+    private fun setupTextToOptions(answers: List<Int>) {
         for (i in answers.indices) {
-            tvAnswers[i].text = answers[i].toString()
+            optionsTextViews[i].text = answers[i].toString()
         }
     }
 

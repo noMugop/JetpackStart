@@ -12,9 +12,9 @@ class GenerateQuestionUseCase {
         val options = HashSet<Int>()
         val rightAnswer = sum - visibleNumber
         options.add(rightAnswer)
+        val from = max(MIN_VISIBLE_NUMBER, rightAnswer - COUNT_OF_ANSWERS)
+        val to = min(rightAnswer + COUNT_OF_ANSWERS, maxValue)
         while (options.size < COUNT_OF_ANSWERS) {
-            val from = max(MIN_VISIBLE_NUMBER, rightAnswer - COUNT_OF_ANSWERS)
-            val to = min(rightAnswer + COUNT_OF_ANSWERS, maxValue)
             options.add(Random.nextInt(from, to + 1))
         }
         return Question(sum, visibleNumber, options.toList())
