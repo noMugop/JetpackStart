@@ -11,7 +11,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import ru.sumin.jetpackstart.R
 import ru.sumin.jetpackstart.databinding.FragmentGameBinding
 import ru.sumin.jetpackstart.domain.entity.Level
 
@@ -23,6 +22,16 @@ class GameFragment : Fragment() {
     private lateinit var level: Level
     private var optionsTextViews = mutableListOf<TextView>()
     private val args by navArgs<GameFragmentArgs>()
+
+    private val goodColor by lazy {
+        val colorResId = android.R.color.holo_green_light
+        ContextCompat.getColor(requireContext(), colorResId)
+    }
+
+    private val badColor by lazy {
+        val colorResId = android.R.color.holo_red_light
+        ContextCompat.getColor(requireContext(), colorResId)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,7 +49,14 @@ class GameFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel = ViewModelProvider(this)[GameViewModel::class.java]
+
+        viewModel = ViewModelProvider(
+            this,
+            ViewModelProvider.AndroidViewModelFactory.getInstance(
+                requireActivity().application
+            )
+        )[GameViewModel::class.java]
+
         getTextViewsOptions()
         setupClickListenersToOptions()
         observeViewModel()
@@ -93,8 +109,14 @@ class GameFragment : Fragment() {
         viewModel.enoughPercentage.observe(viewLifecycleOwner) {
             setupProgressColorByState(it)
         }
+        viewModel.enoughCountOfRightAnswers.observe(viewLifecycleOwner) {
+            setupTextColorByState(it)
+        }
         viewModel.minPercentOfRightAnswers.observe(viewLifecycleOwner) {
             binding.progressBar.secondaryProgress = it
+        }
+        viewModel.rightAnswersProgress.observe(viewLifecycleOwner) {
+            binding.tvAnswersProgress.text = it
         }
     }
 
@@ -104,13 +126,21 @@ class GameFragment : Fragment() {
         }
     }
 
+    private fun setupTextColorByState(enoughRightAnswers: Boolean) {
+        val color = getColorByState(enoughRightAnswers)
+        binding.tvAnswersProgress.setTextColor(color)
+    }
+
     private fun setupProgressColorByState(enoughPercentage: Boolean) {
-        val colorResId = if (enoughPercentage) {
-            android.R.color.holo_green_light
-        } else {
-            android.R.color.holo_red_light
-        }
-        val color = ContextCompat.getColor(requireContext(), colorResId)
+        val color = getColorByState(enoughPercentage)
         binding.progressBar.progressTintList = ColorStateList.valueOf(color)
+    }
+
+    private fun getColorByState(isGoodState: Boolean): Int {
+        return if (isGoodState) {
+            goodColor
+        } else {
+            badColor
+        }
     }
 }

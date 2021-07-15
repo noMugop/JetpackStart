@@ -1,10 +1,13 @@
 package ru.sumin.jetpackstart.presentation
 
+import android.app.Application
 import android.os.CountDownTimer
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
+import ru.sumin.jetpackstart.R
 import ru.sumin.jetpackstart.data.GameRepositoryImpl
 import ru.sumin.jetpackstart.domain.entity.GameResult
 import ru.sumin.jetpackstart.domain.entity.GameSettings
@@ -13,7 +16,7 @@ import ru.sumin.jetpackstart.domain.entity.Question
 import ru.sumin.jetpackstart.domain.usecase.GenerateQuestionUseCase
 import ru.sumin.jetpackstart.domain.usecase.GetGameSettingsUseCase
 
-class GameViewModel : ViewModel() {
+class GameViewModel(application: Application) : AndroidViewModel(application) {
 
     private val repository = GameRepositoryImpl
 
@@ -47,6 +50,19 @@ class GameViewModel : ViewModel() {
         it >= gameSettings.minPercentOfRightAnswers
     }
 
+    private val countOfRightAnswersLD = MutableLiveData(0)
+    val enoughCountOfRightAnswers: LiveData<Boolean> = Transformations.map(countOfRightAnswersLD) {
+        it >= gameSettings.minCountOfRightAnswers
+    }
+
+    val rightAnswersProgress: LiveData<String> = Transformations.map(countOfRightAnswersLD) {
+        String.format(
+            application.resources.getString(R.string.progress_answers),
+            it,
+            gameSettings.minCountOfRightAnswers
+        )
+    }
+
     private var timer: CountDownTimer? = null
     private var countOfRightAnswers = 0
     private var countOfWrongAnswers = 0
@@ -76,6 +92,7 @@ class GameViewModel : ViewModel() {
         val rightAnswer = question.value
         if (answer == rightAnswer?.rightAnswer) {
             countOfRightAnswers++
+            countOfRightAnswersLD.value = countOfRightAnswers
         } else {
             countOfWrongAnswers++
         }
@@ -108,7 +125,7 @@ class GameViewModel : ViewModel() {
 
     private fun getGameResult(): GameResult {
         val percentOfRightAnswers = getPercentOfRightAnswers()
-        val enoughPercentage = percentOfRightAnswers > gameSettings.minPercentOfRightAnswers
+        val enoughPercentage = percentOfRightAnswers >= gameSettings.minPercentOfRightAnswers
         val enoughRightAnswers = countOfRightAnswers >= gameSettings.minCountOfRightAnswers
         val winner = enoughPercentage && enoughRightAnswers
         val countOfQuestions = countOfRightAnswers + countOfWrongAnswers

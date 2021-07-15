@@ -139,8 +139,19 @@
         tools:text="6"
         />
 
+    <TextView
+        android:id="@+id/tv_answers_progress"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/progress_answers"
+        android:layout_margin="16dp"
+        app:layout_constraintVertical_chainStyle="spread"
+        app:layout_constraintTop_toBottomOf="@id/tv_left_number"
+        app:layout_constraintBottom_toTopOf="@id/progress_bar"
+        />
+
     <ProgressBar
-        android:id="@+id/progressBar"
+        android:id="@+id/progress_bar"
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -149,7 +160,7 @@
         app:layout_constraintBottom_toTopOf="@+id/tv_option_2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_left_number"
+        app:layout_constraintTop_toBottomOf="@+id/tv_answers_progress"
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
