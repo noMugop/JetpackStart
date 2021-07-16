@@ -10,6 +10,7 @@ class GameViewModelFactory(
     private val level: Level
 ): ViewModelProvider.Factory {
 
+    @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         if (GameViewModel::class.java.isAssignableFrom(modelClass)) {
             return GameViewModel(application, level) as T
