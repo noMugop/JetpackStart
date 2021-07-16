@@ -2,7 +2,6 @@ package ru.sumin.jetpackstart.presentation
 
 import android.app.Application
 import android.os.CountDownTimer
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
@@ -16,7 +15,10 @@ import ru.sumin.jetpackstart.domain.entity.Question
 import ru.sumin.jetpackstart.domain.usecase.GenerateQuestionUseCase
 import ru.sumin.jetpackstart.domain.usecase.GetGameSettingsUseCase
 
-class GameViewModel(application: Application) : AndroidViewModel(application) {
+class GameViewModel(
+    private val application: Application,
+    private val level: Level
+) : ViewModel() {
 
     private val repository = GameRepositoryImpl
 
@@ -24,7 +26,6 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     private val getGameSettingsUseCase = GetGameSettingsUseCase(repository)
 
     private lateinit var gameSettings: GameSettings
-    private lateinit var level: Level
 
     private val _minPercentOfRightAnswers = MutableLiveData<Int>()
     val minPercentOfRightAnswers: LiveData<Int>
@@ -67,8 +68,8 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     private var countOfRightAnswers = 0
     private var countOfWrongAnswers = 0
 
-    fun startGame(level: Level) {
-        setupGameSettings(level)
+    init {
+        setupGameSettings()
         startTimer()
         generateQuestion()
     }
@@ -82,8 +83,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         generateQuestion()
     }
 
-    private fun setupGameSettings(level: Level) {
-        this.level = level
+    private fun setupGameSettings() {
         gameSettings = getGameSettingsUseCase(level)
         _minPercentOfRightAnswers.value = gameSettings.minPercentOfRightAnswers
     }

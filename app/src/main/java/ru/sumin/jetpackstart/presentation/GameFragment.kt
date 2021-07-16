@@ -52,17 +52,12 @@ class GameFragment : Fragment() {
 
         viewModel = ViewModelProvider(
             this,
-            ViewModelProvider.AndroidViewModelFactory.getInstance(
-                requireActivity().application
-            )
+            GameViewModelFactory(requireActivity().application, level)
         )[GameViewModel::class.java]
 
         getTextViewsOptions()
         setupClickListenersToOptions()
         observeViewModel()
-        if (savedInstanceState == null) {
-            viewModel.startGame(level)
-        }
     }
 
     private fun parseArgs() {
